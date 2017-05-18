@@ -24,3 +24,16 @@ SHOW_FULLPATH=false; # Show the full path of the folder in the title or only the
 
 ### Known bugs
 * It can't open files with an apostrofe `'` in their names
+
+
+## pipe-virsh.py
+This is a pipemenu to manage virtual machines using `virsh`. It uses Python 3 and it does not have any kind of configuration.
+
+### Usage
+```xml
+<!--
+  $SCRIPT // Path to the script
+  $LABEL  // Name to show for the pipemenu
+-->
+<menu execute="$SCRIPT" id="pipe-virsh" label="$LABEL" />
+```
