@@ -27,7 +27,7 @@ SHOW_FULLPATH=false; # Show the full path of the folder in the title or only the
 
 
 ## pipe-virsh.py
-This is a pipemenu to manage virtual machines using `virsh`. It uses Python 3 and it does not have any kind of configuration.
+This is a pipemenu to manage virtual machines using `virsh`. It uses Python 3.
 
 ### Usage
 ```xml
@@ -36,4 +36,10 @@ This is a pipemenu to manage virtual machines using `virsh`. It uses Python 3 an
   $LABEL  // Name to show for the pipemenu
 -->
 <menu execute="$SCRIPT" id="pipe-virsh" label="$LABEL" />
+```
+
+### Configuration
+The only configuration is to show/hide unicode characters for the actions, in case the user's font doesn't have them
+```python
+FULL_UNICODE = False
 ```

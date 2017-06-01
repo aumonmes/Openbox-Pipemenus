@@ -5,34 +5,37 @@ import sys
 import subprocess
 import re
 
+# Config
+FULL_UNICODE = False
+
 # Globals
 status = {
 	'running': {
-		'symbol': '&#9654;',
-		'actions': ['Shutdown', 'Pause', 'Reboot', 'Destroy']
+		'icon': '&#9654;',
+		'actions': ['View', 'Shutdown', 'Pause', 'Reboot', 'Destroy']
 	},
 	'paused': {
-		'symbol': '&#9646;&#9646;',
+		'icon': '&#9208;',
 		'actions': ['Resume', 'Shutdown', 'Destroy']
 	},
 	'shut off': {
-		'symbol': '&#9724;',
+		'icon': '&#9209;',
 		'actions': ['Start']
 	},
 	'crashed': {
-		'symbol': '&#8251',
+		'icon': '&#8251',
 		'actions': ['Start', 'Destroy']
 	},
 	'in shutdown': {
-		'symbol': '&#10071',
+		'icon': '&#10071',
 		'actions': []
 	},
 	'idle': {
-		'symbol': '&#8275',
+		'icon': '&#8275',
 		'actions': []
 	},
 	'dying': {
-		'symbol': '&#9760',
+		'icon': '&#9762',
 		'actions': []
 	}
 }
@@ -63,16 +66,38 @@ def get_cmd(action, vm):
 def get_vm_valid_actions(vm):
 	output = ""
 	actions = {
-		'Start': get_cmd('start', vm['name']),
-		'Shutdown': get_cmd('shutdown', vm['id']),
-		'Reboot': get_cmd('reboot', vm['id']),
-		'Pause': get_cmd('suspend', vm['id']),
-		'Resume': get_cmd('resume', vm['id']),
-		'Destroy': get_cmd('destroy', vm['id'])
+		'Start': {
+			'icon': '&#9654;',
+			'cmd': get_cmd('start', vm['name'])
+		},
+		'Shutdown': {
+			'icon': '&#9209;',
+			'cmd': get_cmd('shutdown', vm['id'])
+		},
+		'Reboot': {
+			'icon': '&#10227;',
+			'cmd': get_cmd('reboot', vm['id'])
+		},
+		'Pause': {
+			'icon': '&#9208;',
+			'cmd': get_cmd('suspend', vm['id'])
+		},
+		'Resume': {
+			'icon': '&#9654;',
+			'cmd': get_cmd('resume', vm['id'])
+		},
+		'Destroy': {
+			'icon': '&#9762;',
+			'cmd': get_cmd('destroy', vm['id'])
+		},
+		'View': {
+			'icon': '&#128065;',
+			'cmd': 'virt-viewer ' + vm['id']
+		}
 	}
 
 	for action in status[vm['status']]['actions']:
-		output += xml_vm_action(action, actions[action])
+		output += xml_vm_action(actions[action]['icon'], action, actions[action]['cmd'])
 
 	return output
 
@@ -87,13 +112,15 @@ def xml_main():
 	return output
 
 def xml_vm(vm):
-	output = '\t<menu id="' + vm['name'] + '" label="' + status[vm['status']]['symbol'] + ' ' + vm['name'] + '">\n'
+	label = (status[vm['status']]['icon'] + ' ' if FULL_UNICODE else '' ) + vm['name']
+	output = '\t<menu id="' + vm['name'] + '" label="' + label + '">\n'
 	output += get_vm_valid_actions(vm)
 	output += '\t</menu>\n'
 	return output
 
-def xml_vm_action(action, cmd):
-	output = '\t\t<item label="' + action + '">\n'
+def xml_vm_action(icon, action, cmd):
+	label = (icon + ' ' if FULL_UNICODE else '' ) + action
+	output = '\t\t<item label="' + label + '">\n'
 	output += '\t\t\t<action name="Execute">\n'
 	output += '\t\t\t\t<execute>\n'
 	output += '\t\t\t\t\t' + cmd
